@@ -1,0 +1,9 @@
+[workspace]
+members = [
+    "driver",
+    "sandboxed-libjpeg-turbo-conv",
+    "sandboxed-netpbm-conv",
+]
+
+[profile.release]
+debug = true

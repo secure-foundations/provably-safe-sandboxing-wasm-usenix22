@@ -1,0 +1,385 @@
+benchify_version = 1
+tags = ["wasi_executable"]
+parallel_prep = true
+main_tool = "native"
+
+[[tools]]
+name = "rwasm"
+program = "../rWasm/target/release/rwasm"
+existence_confirmation = ["--version"]
+install_instructions = "cd ../rWasm && cargo build --release"
+
+[tools.runners.wasi_executable]
+prepare = "cp .generated/build-rwasm-{NAME}/target/release/sandboxed-{NAME} .generated/rwasm-{NAME} || (/usr/bin/time -f '%e' -o './preparation/rwasm-----{NAME}.tool-time' ../rWasm/target/release/rwasm --wasi-executable {FILE} .generated/build-rwasm-{NAME} && cd .generated/build-rwasm-{NAME} && cargo build --release && cp ./target/release/sandboxed-{NAME} ../rwasm-{NAME} && cd ../..)"
+run_cmd = ".generated/rwasm-{NAME} {...}"
+cleanup = "rm -f .generated/rwasm-{NAME}"
+
+[[tools]]
+name = "wasmtime"
+program = "wasmtime"
+existence_confirmation = ["--version"]
+install_instructions = "curl https://wasmtime.dev/install.sh -sSf | bash"
+warmup = 5
+
+[tools.runners.wasi_executable]
+run_cmd = "wasmtime run {FILE} -- {...}"
+
+[[tools]]
+name = "wasmer-js"
+program = "wasmer-js"
+existence_confirmation = ["--version"]
+install_instructions = "sudo npm install -g @wasmer/cli"
+warmup = 5
+
+[tools.runners.wasi_executable]
+run_cmd = "wasmer-js run {FILE} -- {...}"
+
+[[tools]]
+name = "wasmer-default"
+program = "wasmer"
+existence_confirmation = ["--version"]
+install_instructions = "curl https://get.wasmer.io -sSfL | sh"
+warmup = 5
+
+[tools.runners.wasi_executable]
+run_cmd = "wasmer run {FILE} -- {...}"
+
+[[tools]]
+name = "wasmer-cranelift"
+program = "wasmer"
+existence_confirmation = ["--version"]
+install_instructions = "curl https://get.wasmer.io -sSfL | sh"
+warmup = 5
+
+[tools.runners.wasi_executable]
+run_cmd = "wasmer run --cranelift {FILE} -- {...}"
+
+[[tools]]
+name = "wasmer-jit"
+program = "wasmer"
+existence_confirmation = ["--version"]
+install_instructions = "curl https://get.wasmer.io -sSfL | sh"
+warmup = 5
+
+[tools.runners.wasi_executable]
+run_cmd = "wasmer run --jit {FILE} -- {...}"
+
+[[tools]]
+name = "wasmer-llvm"
+program = "wasmer"
+existence_confirmation = ["--version"]
+install_instructions = "curl https://get.wasmer.io -sSfL | sh"
+warmup = 5
+
+[tools.runners.wasi_executable]
+run_cmd = "wasmer run --llvm {FILE} -- {...}"
+
+[[tools]]
+name = "wasmer-native"
+program = "wasmer"
+existence_confirmation = ["--version"]
+install_instructions = "curl https://get.wasmer.io -sSfL | sh"
+warmup = 5
+
+[tools.runners.wasi_executable]
+run_cmd = "wasmer run --native {FILE} -- {...}"
+
+[[tools]]
+name = "wavm-precompiled"
+program = "wavm"
+existence_confirmation = ["--version"]
+install_instructions = "wget https://github.com/WAVM/WAVM/releases/download/nightly%2F2020-09-16/wavm-0.0.0-prerelease-linux.deb && sudo dpkg -i ./wavm-0.0.0-prerelease-linux.deb"
+warmup = 5
+
+[tools.runners.wasi_executable]
+prepare = "test -f .generated/wavm-precompiled-{NAME}.wasm || wavm compile {FILE} .generated/wavm-precompiled-{NAME}.wasm"
+run_cmd = "ulimit -s 8192 && wavm run --precompiled .generated/wavm-precompiled-{NAME}.wasm {...}"
+
+[[tools]]
+name = "wasm3"
+program = "./wasm3-cosmopolitan.com"
+existence_confirmation = []
+install_instructions = "wget https://github.com/wasm3/wasm3/releases/download/v0.4.9/wasm3-cosmopolitan.com"
+warmup = 5
+
+[tools.runners.wasi_executable]
+run_cmd = "./wasm3-cosmopolitan.com {FILE} {...}"
+
+[[tools]]
+name = "WAMR-interpreter"
+program = "./iwasm"
+existence_confirmation = []
+install_instructions = "git clone https://github.com/bytecodealliance/wasm-micro-runtime && cd wasm-micro-runtime && git checkout WAMR-04-15-2021 && cd product-mini/platforms/linux && mkdir build && cd build && cmake .. && make -j && cp iwasm ../../../../../ && cd ../../../../wamr-compiler && ./build_llvm.sh && mkdir build && cd build && cp wamrc ../../../ && cd ../../../" # latest release on 2021-05-27
+warmup = 5
+
+[tools.runners.wasi_executable]
+run_cmd = "./iwasm {FILE} {...}"
+
+[[tools]]
+name = "WAMR-compiled-nobounds"
+program = "./wamrc"
+existence_confirmation = []
+install_instructions = "git clone https://github.com/bytecodealliance/wasm-micro-runtime && cd wasm-micro-runtime && git checkout WAMR-04-15-2021 && cd product-mini/platforms/linux && mkdir build && cd build && cmake .. && make -j && cp iwasm ../../../../../ && cd ../../../../wamr-compiler && ./build_llvm.sh && mkdir build && cd build && cp wamrc ../../../ && cd ../../../" # latest release on 2021-05-27
+warmup = 5
+
+[tools.runners.wasi_executable]
+prepare = """\
+(test -s .generated/{NAME}.wamr-nobounds-aot || \
+      ./wamrc --bounds-checks=0 -o .generated/{NAME}.wamr-nobounds-aot {FILE}) \
+"""
+run_cmd = "./iwasm .generated/{NAME}.wamr-nobounds-aot {...}"
+
+[[tools]]
+name = "WAMR-compiled-chkbounds"
+program = "./wamrc"
+existence_confirmation = []
+install_instructions = "git clone https://github.com/bytecodealliance/wasm-micro-runtime && cd wasm-micro-runtime && git checkout WAMR-04-15-2021 && cd product-mini/platforms/linux && mkdir build && cd build && cmake .. && make -j && cp iwasm ../../../../../ && cd ../../../../wamr-compiler && ./build_llvm.sh && mkdir build && cd build && cp wamrc ../../../ && cd ../../../" # latest release on 2021-05-27
+warmup = 5
+
+[tools.runners.wasi_executable]
+prepare = """\
+(test -s .generated/{NAME}.wamr-chkbounds-aot || \
+      ./wamrc --bounds-checks=1 -o .generated/{NAME}.wamr-chkbounds-aot {FILE}) \
+"""
+run_cmd = "./iwasm .generated/{NAME}.wamr-chkbounds-aot {...}"
+
+[[tools]]
+name = "wasm2c"
+program = "wasm2c"
+existence_confirmation = []
+install_instructions = "Install `wasm2c` from WABT (tested on 189c0e61cb164b6db98a97b6bc4f19205d9f2dc6) and make sure wasm2c-helpers is set up correctly (run `cargo build --release` inside `wasm2c-helpers/wasi-integration/` and then copy `wasm2c-helpers/wasi-integration/target/release/libwasi_wasm2c.a` to `wasm2c-helpers/`). To get wasm2c: `git clone https://github.com/WebAssembly/wabt && cd wabt && git reset --hard 189c0e61cb164b6db98a97b6bc4f19205d9f2dc6 && mkdir build && cd build && cmake .. -DBUILD_TESTS=OFF && make -j && cp wasm2c ../../ && cd ../..`"
+warmup = 5
+
+[tools.runners.wasi_executable]
+prepare = """\
+(test -s .generated/wasm2c-{NAME}.c || \
+      wasm2c -o .generated/wasm2c-{NAME}.c {FILE}) && \
+(test -s .generated/wasm2c-{NAME}.compiled || \
+      gcc -O3 \
+           -I. -Iwasm2c-helpers \
+          -DWASM_RT_MODULE_PREFIX=WASMMODULE_ \
+          -o .generated/wasm2c-{NAME}.compiled \
+          .generated/wasm2c-{NAME}.c \
+          wasm2c-helpers/wasm-rt-impl.c \
+          wasm2c-helpers/wasm2c-runner.c \
+          wasm2c-helpers/libwasi_wasm2c.a \
+          -lpthread -ldl -lm) \
+"""
+run_cmd = ".generated/wasm2c-{NAME}.compiled {...}"
+
+[[tools]]
+name = "native"
+program = "sh"
+existence_confirmation = ["-c", "true"]
+install_instructions = "If you don't have a shell, you've got worse problems."
+warmup = 5
+
+[tools.runners.wasi_executable]
+run_cmd = "sh -c './$(dirname {FILE})/$(basename {FILE} .wasm).native {...}'"
+
+[[tools]]
+name = "vwasm"
+program = "./vWasm"
+existence_confirmation = []
+install_instructions = """\
+    Grab `main.native` from vWasm and place it here as `./vWasm`. \
+    Make sure to also copy over libwasi.a"""
+warmup = 5
+
+[tools.runners.wasi_executable]
+prepare = """\
+(test -s .generated/{NAME}.wat || \
+      wasm2wat {FILE} -o .generated/{NAME}.wat) && \
+(test -s .generated/{NAME}.vasm || \
+      wat2vasm .generated/{NAME}.wat -o .generated/{NAME}.vasm) && \
+(test -s .generated/vWasm-{NAME}.asm || \
+      /usr/bin/time -f '%e' -o './preparation/vWasm-----{NAME}.tool-time' ./vWasm --peephole-optimize .generated/{NAME}.vasm -l wasi_sbx -p 16000 > .generated/vWasm-{NAME}.asm) && \
+(test -s .generated/vWasm-{NAME}.o || \
+      nasm -f elf64 .generated/vWasm-{NAME}.asm -o .generated/vWasm-{NAME}.o) && \
+(test -s .generated/vWasm-{NAME}.compiled || \
+      gcc -o .generated/vWasm-{NAME}.compiled .generated/vWasm-{NAME}.o \
+          ./libwasi.a -lpthread -ldl -no-pie) \
+"""
+run_cmd = ".generated/vWasm-{NAME}.compiled"
+
+##### All the PolyBench-C Benchmarks
+
+[[tests]]
+name = "2mm"
+tag = "wasi_executable"
+file = "polybench-c/benchmark-binaries/2mm.wasm"
+stdout_is_timing = true
+
+[[tests]]
+name = "3mm"
+tag = "wasi_executable"
+file = "polybench-c/benchmark-binaries/3mm.wasm"
+stdout_is_timing = true
+
+[[tests]]
+name = "adi"
+tag = "wasi_executable"
+file = "polybench-c/benchmark-binaries/adi.wasm"
+stdout_is_timing = true
+
+[[tests]]
+name = "atax"
+tag = "wasi_executable"
+file = "polybench-c/benchmark-binaries/atax.wasm"
+stdout_is_timing = true
+
+[[tests]]
+name = "bicg"
+tag = "wasi_executable"
+file = "polybench-c/benchmark-binaries/bicg.wasm"
+stdout_is_timing = true
+
+[[tests]]
+name = "cholesky"
+tag = "wasi_executable"
+file = "polybench-c/benchmark-binaries/cholesky.wasm"
+stdout_is_timing = true
+
+[[tests]]
+name = "correlation"
+tag = "wasi_executable"
+file = "polybench-c/benchmark-binaries/correlation.wasm"
+stdout_is_timing = true
+
+[[tests]]
+name = "covariance"
+tag = "wasi_executable"
+file = "polybench-c/benchmark-binaries/covariance.wasm"
+stdout_is_timing = true
+
+[[tests]]
+name = "doitgen"
+tag = "wasi_executable"
+file = "polybench-c/benchmark-binaries/doitgen.wasm"
+stdout_is_timing = true
+
+[[tests]]
+name = "durbin"
+tag = "wasi_executable"
+file = "polybench-c/benchmark-binaries/durbin.wasm"
+stdout_is_timing = true
+
+[[tests]]
+name = "dynprog"
+tag = "wasi_executable"
+file = "polybench-c/benchmark-binaries/dynprog.wasm"
+stdout_is_timing = true
+
+[[tests]]
+name = "fdtd-2d"
+tag = "wasi_executable"
+file = "polybench-c/benchmark-binaries/fdtd-2d.wasm"
+stdout_is_timing = true
+
+[[tests]]
+name = "fdtd-apml"
+tag = "wasi_executable"
+file = "polybench-c/benchmark-binaries/fdtd-apml.wasm"
+stdout_is_timing = true
+
+[[tests]]
+name = "floyd-warshall"
+tag = "wasi_executable"
+file = "polybench-c/benchmark-binaries/floyd-warshall.wasm"
+stdout_is_timing = true
+
+[[tests]]
+name = "gemm"
+tag = "wasi_executable"
+file = "polybench-c/benchmark-binaries/gemm.wasm"
+stdout_is_timing = true
+
+[[tests]]
+name = "gemver"
+tag = "wasi_executable"
+file = "polybench-c/benchmark-binaries/gemver.wasm"
+stdout_is_timing = true
+
+[[tests]]
+name = "gesummv"
+tag = "wasi_executable"
+file = "polybench-c/benchmark-binaries/gesummv.wasm"
+stdout_is_timing = true
+
+[[tests]]
+name = "gramschmidt"
+tag = "wasi_executable"
+file = "polybench-c/benchmark-binaries/gramschmidt.wasm"
+stdout_is_timing = true
+
+[[tests]]
+name = "jacobi-1d-imper"
+tag = "wasi_executable"
+file = "polybench-c/benchmark-binaries/jacobi-1d-imper.wasm"
+stdout_is_timing = true
+
+[[tests]]
+name = "jacobi-2d-imper"
+tag = "wasi_executable"
+file = "polybench-c/benchmark-binaries/jacobi-2d-imper.wasm"
+stdout_is_timing = true
+
+[[tests]]
+name = "lu"
+tag = "wasi_executable"
+file = "polybench-c/benchmark-binaries/lu.wasm"
+stdout_is_timing = true
+
+[[tests]]
+name = "ludcmp"
+tag = "wasi_executable"
+file = "polybench-c/benchmark-binaries/ludcmp.wasm"
+stdout_is_timing = true
+
+[[tests]]
+name = "mvt"
+tag = "wasi_executable"
+file = "polybench-c/benchmark-binaries/mvt.wasm"
+stdout_is_timing = true
+
+[[tests]]
+name = "reg_detect"
+tag = "wasi_executable"
+file = "polybench-c/benchmark-binaries/reg_detect.wasm"
+stdout_is_timing = true
+
+[[tests]]
+name = "seidel-2d"
+tag = "wasi_executable"
+file = "polybench-c/benchmark-binaries/seidel-2d.wasm"
+stdout_is_timing = true
+
+[[tests]]
+name = "symm"
+tag = "wasi_executable"
+file = "polybench-c/benchmark-binaries/symm.wasm"
+stdout_is_timing = true
+
+[[tests]]
+name = "syr2k"
+tag = "wasi_executable"
+file = "polybench-c/benchmark-binaries/syr2k.wasm"
+stdout_is_timing = true
+
+[[tests]]
+name = "syrk"
+tag = "wasi_executable"
+file = "polybench-c/benchmark-binaries/syrk.wasm"
+stdout_is_timing = true
+
+[[tests]]
+name = "trisolv"
+tag = "wasi_executable"
+file = "polybench-c/benchmark-binaries/trisolv.wasm"
+stdout_is_timing = true
+
+[[tests]]
+name = "trmm"
+tag = "wasi_executable"
+file = "polybench-c/benchmark-binaries/trmm.wasm"
+stdout_is_timing = true

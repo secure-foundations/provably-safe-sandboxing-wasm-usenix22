@@ -1,0 +1,35 @@
+benchify_version = 1
+tags = ["default"]
+warmup = 10
+min_runs = 100
+max_runs = 100
+main_tool = "native"
+
+[[tools]]
+name = "native"
+program = "./gif2jpg.native"
+install_instructions = "Run `make`"
+
+[tools.runners.default]
+run_args = ["{FILE}", "/dev/null"]
+
+[[tools]]
+name = "rwasm"
+program = "./gif2jpg.rwasm-built"
+install_instructions = "Run `make`"
+
+[tools.runners.default]
+run_args = ["{FILE}", "/dev/null"]
+
+[[tools]]
+name = "vwasm"
+program = "./gif2jpg.vwasm-built"
+install_instructions = "Run `make`"
+
+[tools.runners.default]
+run_args = ["{FILE}", "/dev/null"]
+
+[[tests]]
+name = "example.gif"
+tag = "default"
+file = "test_images/example.gif"

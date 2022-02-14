@@ -1,0 +1,2 @@
+toolverified = 'vWasm'
+toolhighperf = 'rWasm'

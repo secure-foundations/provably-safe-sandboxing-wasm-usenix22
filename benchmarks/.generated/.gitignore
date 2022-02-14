@@ -1,0 +1,7 @@
+/build-*
+/wavm-precompiled-*
+/lucet-compiled-*
+/witchcraft-*
+/vWASMc-*
+/*.wamr-*-aot
+/wasm2c-*

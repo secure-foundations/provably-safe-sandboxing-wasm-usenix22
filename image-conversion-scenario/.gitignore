@@ -1,0 +1,4 @@
+*.native
+*.*wasm-built
+temp.*
+benchify-results/

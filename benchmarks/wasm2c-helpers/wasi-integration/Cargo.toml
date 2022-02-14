@@ -1,0 +1,13 @@
+[package]
+name = "wasi-integration"
+version = "0.1.0"
+authors = ["Jay Bosamiya <jaybosamiya@gmail.com>"]
+edition = "2018"
+
+[lib]
+name = "wasi_wasm2c"
+crate-type = ["staticlib"]
+
+[dependencies]
+wasi-common = "0.20.0"
+wiggle = "0.20.0"

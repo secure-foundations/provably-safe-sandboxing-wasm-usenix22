@@ -1,0 +1,93 @@
+DEFAULT_TARGET = nonmerge
+BUILD_FIASCO = N
+
+CC = gcc
+LD = $(CC)
+
+CC_FOR_BUILD = gcc
+LD_FOR_BUILD = $(CC_FOR_BUILD)
+
+LINKERISCOMPILER=Y
+LINKER_CAN_DO_EXPLICIT_LIBRARY=Y
+
+INTTYPES_H = <inttypes.h>
+
+INSTALL = echo
+STRIPFLAG =
+
+SYMLINK = ln -s
+
+MANPAGE_FORMAT = nroff
+
+AR = ar
+RANLIB = ranlib
+LEX =
+
+CFLAGS = -O3 -ffast-math  -pedantic -Wall -Wno-uninitialized -Wmissing-declarations -Wimplicit -Wwrite-strings -Wmissing-prototypes -flax-vector-conversions
+LDFLAGS = -O3 -lm
+
+EXE =
+
+LDSHLIB = -shared -Wl,-soname,$(SONAME)
+
+LDRELOC = NONE
+
+CFLAGS_SHLIB =
+SHLIB_CLIB =
+
+NEED_RUNTIME_PATH = N
+RPATHOPTNAME = -rpath
+
+NETPBMLIB_RUNTIME_PATH =
+
+TIFFLIB = NONE
+TIFFHDR_DIR =
+TIFFLIB_LDFLAGS =
+JPEGLIB = NONE
+JPEGHDR_DIR =
+PNGLIB = NONE
+PNGHDR_DIR =
+PNGVER =
+ZLIB = NONE
+ZHDR_DIR =
+JBIGLIB = NONE
+JBIGHDR_DIR =
+JASPERLIB = NONE
+JASPERHDR_DIR =
+URTLIB = NONE
+URTHDR_DIR = $(SRCDIR)/urt
+LINUXSVGALIB = NONE
+LINUXSVGAHDR_DIR =
+
+OMIT_NETWORK = Y
+
+NETWORKLD =
+
+VMS =
+
+PKGDIR_DEFAULT = /tmp/netpbm
+
+INSTALL_PERM_BIN =  755       # u=rwx,go=rx
+INSTALL_PERM_LIBD = 755       # u=rwx,go=rx
+INSTALL_PERM_LIBS = 644       # u=rw,go=r
+INSTALL_PERM_HDR =  644       # u=rw,go=r
+INSTALL_PERM_MAN =  644       # u=rw,go=r
+INSTALL_PERM_DATA = 644       # u=rw,go=r
+
+SUFFIXMANUALS1 = 1
+SUFFIXMANUALS3 = 3
+SUFFIXMANUALS5 = 5
+
+NETPBMLIBTYPE = unixstatic
+NETPBMLIBSUFFIX = a
+
+STATICLIB_TOO = n
+STATICLIBSUFFIX = a
+
+SHLIBPREFIXLIST = lib
+
+NETPBMSHLIBPREFIX = $(firstword $(SHLIBPREFIXLIST))
+
+DLLVER =
+
+NETPBM_DOCURL = http://netpbm.sourceforge.net/doc/

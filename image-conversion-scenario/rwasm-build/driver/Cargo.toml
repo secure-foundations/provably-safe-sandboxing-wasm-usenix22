@@ -1,0 +1,8 @@
+[package]
+name = "driver"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+sandboxed-libjpeg-turbo-conv = { path = "../sandboxed-libjpeg-turbo-conv" }
+sandboxed-netpbm-conv = { path = "../sandboxed-netpbm-conv" }
