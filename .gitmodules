@@ -1,9 +1,9 @@
 [submodule "rWasm"]
 	path = rWasm
-	url = git@github.com:secure-foundations/rWasm.git
+	url = https://github.com/secure-foundations/rWasm
 [submodule "vWasm"]
 	path = vWasm
-	url = git@github.com:secure-foundations/vWasm.git
+	url = https://github.com/secure-foundations/vWasm
 [submodule "wasm-semantics-fuzzer"]
 	path = wasm-semantics-fuzzer
-	url = git@github.com:secure-foundations/wasm-semantics-fuzzer.git
+	url = https://github.com/secure-foundations/wasm-semantics-fuzzer

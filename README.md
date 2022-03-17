@@ -8,7 +8,7 @@ in one go, use:
 
 ```sh
 git clone --recursive \
-    git@github.com:secure-foundations/provably-safe-sandboxing-wasm-usenix22.git
+    https://github.com/secure-foundations/provably-safe-sandboxing-wasm-usenix22
 ```
 
 This repository also contains the files necessary to benchmark vWasm
