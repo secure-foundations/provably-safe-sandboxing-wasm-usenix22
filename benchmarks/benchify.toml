@@ -99,7 +99,7 @@ run_cmd = "ulimit -s 8192 && wavm run --precompiled .generated/wavm-precompiled-
 name = "wasm3"
 program = "./wasm3-cosmopolitan.com"
 existence_confirmation = []
-install_instructions = "wget https://github.com/wasm3/wasm3/releases/download/v0.4.9/wasm3-cosmopolitan.com"
+install_instructions = "rm -f ./wasm3-cosmopolitan.com && wget https://github.com/wasm3/wasm3/releases/download/v0.4.9/wasm3-cosmopolitan.com && chmod +x ./wasm3-cosmopolitan.com && sh ./wasm3-cosmopolitan.com"
 warmup = 5
 
 [tools.runners.wasi_executable]
