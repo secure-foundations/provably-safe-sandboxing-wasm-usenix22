@@ -4,7 +4,7 @@ parallel_prep = true
 main_tool = "native"
 
 [[tools]]
-name = "rwasm"
+name = "rWasm"
 program = "../rWasm/target/release/rwasm"
 existence_confirmation = ["--version"]
 install_instructions = "cd ../rWasm && cargo build --release"
@@ -178,7 +178,7 @@ warmup = 5
 run_cmd = "sh -c './$(dirname {FILE})/$(basename {FILE} .wasm).native {...}'"
 
 [[tools]]
-name = "vwasm"
+name = "vWasm"
 program = "./vWasm"
 existence_confirmation = []
 install_instructions = """\
@@ -201,6 +201,31 @@ prepare = """\
           ./libwasi.a -lpthread -ldl -no-pie) \
 """
 run_cmd = ".generated/vWasm-{NAME}.compiled"
+
+[[tools]]
+name = "vWasm-nosbx"
+program = "./vWasm"
+existence_confirmation = []
+install_instructions = """\
+    Grab `main.native` from vWasm and place it here with the right name. \
+    Make sure to also copy over libwasi.a"""
+warmup = 5
+
+[tools.runners.wasi_executable]
+prepare = """\
+(test -s .generated/{NAME}.wat || \
+      wasm2wat {FILE} -o .generated/{NAME}.wat) && \
+(test -s .generated/{NAME}.vasm || \
+      wat2vasm .generated/{NAME}.wat -o .generated/{NAME}.vasm) && \
+(test -s .generated/vWasm-nosbx-{NAME}.asm || \
+      ./vWasm --peephole-optimize .generated/{NAME}.vasm -l wasi_x64 -p 16000 > .generated/vWasm-nosbx-{NAME}.asm) && \
+(test -s .generated/vWasm-nosbx-{NAME}.o || \
+      nasm -f elf64 .generated/vWasm-nosbx-{NAME}.asm -o .generated/vWasm-nosbx-{NAME}.o) && \
+(test -s .generated/vWasm-nosbx-{NAME}.compiled || \
+      gcc -o .generated/vWasm-nosbx-{NAME}.compiled .generated/vWasm-nosbx-{NAME}.o \
+          ./libwasi.a -lpthread -ldl -no-pie) \
+"""
+run_cmd = ".generated/vWasm-nosbx-{NAME}.compiled"
 
 ##### All the PolyBench-C Benchmarks
 
